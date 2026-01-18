@@ -1,0 +1,71 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Domestic share in Top-10 bestseller lists: Germany vs EU peers vs United States",
+    "subtitle": [
+      "Domestic = author nationality matches market (proxy).",
+      "EU peers (avg) = mean of France, Italy, Spain (not pooled)."
+    ],
+    "anchor": "middle",
+    "fontSize": 20,
+    "subtitleFontSize": 12,
+    "offset": 18
+  },
+  "width": 980,
+  "height": 520,
+  "data": {
+    "url": "https://raw.githubusercontent.com/ananyashukla220699/bspw-bestsellers-vega/main/data/derived/domestic_share_top10_marketgroup_yearly_2013_2022.csv",
+    "format": { "type": "csv" }
+  },
+  "encoding": {
+    "x": {
+      "field": "year",
+      "type": "ordinal",
+      "title": "Year",
+      "axis": { "labelAngle": 0, "grid": false, "tickSize": 3 }
+    },
+    "y": {
+      "field": "domestic_share_top10_pct",
+      "type": "quantitative",
+      "title": "Domestic share of Top-10 bestseller titles (%)",
+      "scale": { "domain": [0, 100] },
+      "axis": { "grid": true, "tickCount": 6, "format": ".0f" }
+    },
+    "color": {
+      "field": "market_group",
+      "type": "nominal",
+      "title": "Market group",
+      "scale": {
+        "domain": ["Germany", "EU peers (avg)", "United States"],
+        "range": ["#2E5FA7", "#E5B987", "#D38B8B"]
+      },
+      "legend": {
+        "orient": "right",
+        "titleFontSize": 13,
+        "labelFontSize": 12,
+        "symbolType": "circle"
+      }
+    },
+    "opacity": {
+      "condition": { "test": "datum.market_group == 'Germany'", "value": 1.0 },
+      "value": 0.45
+    },
+    "tooltip": [
+      { "field": "market_group", "type": "nominal", "title": "Market group" },
+      { "field": "year", "type": "ordinal", "title": "Year" },
+      { "field": "domestic_share_top10_pct", "type": "quantitative", "title": "Domestic share (%)", "format": ".1f" },
+      { "field": "n_top10_valid", "type": "quantitative", "title": "Top-10 entries (valid)" },
+      { "field": "n_domestic", "type": "quantitative", "title": "Domestic entries" }
+    ]
+  },
+  "layer": [
+    { "mark": { "type": "line", "strokeWidth": 3 } },
+    { "mark": { "type": "point", "filled": true, "size": 55 } }
+  ],
+  "config": {
+    "view": { "stroke": null },
+    "axis": { "labelFontSize": 12, "titleFontSize": 13 },
+    "axisX": { "grid": false },
+    "axisY": { "grid": true, "gridOpacity": 0.25 }
+  }
+}
