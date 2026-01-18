@@ -1,5 +1,11 @@
 {
-  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "description": "Domestic share in Top-10 bestseller lists: Germany vs EU peers vs United States (Vega version of the given Vega-Lite spec).",
+  "width": 980,
+  "height": 520,
+  "padding": 5,
+  "autosize": { "type": "pad", "contains": "padding" },
+
   "title": {
     "text": "Domestic share in Top-10 bestseller lists: Germany vs EU peers vs United States",
     "subtitle": [
@@ -11,57 +17,144 @@
     "subtitleFontSize": 12,
     "offset": 18
   },
-  "width": 980,
-  "height": 520,
-  "data": {
-    "url": "https://raw.githubusercontent.com/ananyashukla220699/bspw-bestsellers-vega/main/data/derived/domestic_share_top10_marketgroup_yearly_2013_2022.csv",
-    "format": { "type": "csv" }
-  },
-  "encoding": {
-    "x": {
-      "field": "year",
-      "type": "ordinal",
-      "title": "Year",
-      "axis": { "labelAngle": 0, "grid": false, "tickSize": 3 }
-    },
-    "y": {
-      "field": "domestic_share_top10_pct",
-      "type": "quantitative",
-      "title": "Domestic share of Top-10 bestseller titles (%)",
-      "scale": { "domain": [0, 100] },
-      "axis": { "grid": true, "tickCount": 11, "format": ".0f" }
-    },
-    "color": {
-      "field": "market_group",
-      "type": "nominal",
-      "title": "Market group",
-      "scale": {
-        "domain": ["Germany", "EU peers (avg)", "United States"],
-        "range": ["#2E5FA7", "#E5B987", "#D38B8B"]
-      },
-      "legend": {
-        "orient": "right",
-        "titleFontSize": 13,
-        "labelFontSize": 12,
-        "symbolType": "circle"
-      }
-    },
-    "opacity": {
-      "condition": { "test": "datum.market_group == 'Germany'", "value": 1.0 },
-      "value": 0.45
-    },
-    "tooltip": [
-      { "field": "market_group", "type": "nominal", "title": "Market group" },
-      { "field": "year", "type": "ordinal", "title": "Year" },
-      { "field": "domestic_share_top10_pct", "type": "quantitative", "title": "Domestic share (%)", "format": ".1f" },
-      { "field": "n_top10_valid", "type": "quantitative", "title": "Top-10 entries (valid)" },
-      { "field": "n_domestic", "type": "quantitative", "title": "Domestic entries" }
-    ]
-  },
-  "layer": [
-    { "mark": { "type": "line", "strokeWidth": 3 } },
-    { "mark": { "type": "point", "filled": true, "size": 55 } }
+
+  "data": [
+    {
+      "name": "table",
+      "url": "https://raw.githubusercontent.com/ananyashukla220699/bspw-bestsellers-vega/main/data/derived/domestic_share_top10_marketgroup_yearly_2013_2022.csv",
+      "format": { "type": "csv" }
+    }
   ],
+
+  "scales": [
+    {
+      "name": "x",
+      "type": "point",
+      "domain": { "data": "table", "field": "year" },
+      "range": "width",
+      "padding": 0.5
+    },
+    {
+      "name": "y",
+      "type": "linear",
+      "domain": [0, 100],
+      "nice": false,
+      "range": "height",
+      "zero": false
+    },
+    {
+      "name": "color",
+      "type": "ordinal",
+      "domain": ["Germany", "EU peers (avg)", "United States"],
+      "range": ["#2E5FA7", "#E5B987", "#D38B8B"]
+    }
+  ],
+
+  "axes": [
+    {
+      "scale": "x",
+      "orient": "bottom",
+      "title": "Year",
+      "labelAngle": 0,
+      "grid": false,
+      "tickSize": 3
+    },
+    {
+      "scale": "y",
+      "orient": "left",
+      "title": "Domestic share of Top-10 bestseller titles (%)",
+      "grid": true,
+      "tickCount": 11,
+      "format": ".0f"
+    }
+  ],
+
+  "legends": [
+    {
+      "fill": "color",
+      "title": "Market group",
+      "orient": "right",
+      "titleFontSize": 13,
+      "labelFontSize": 12,
+      "symbolType": "circle"
+    }
+  ],
+
+  "marks": [
+    {
+      "type": "group",
+      "from": {
+        "facet": {
+          "name": "series",
+          "data": "table",
+          "groupby": "market_group"
+        }
+      },
+      "marks": [
+        {
+          "name": "lines",
+          "type": "line",
+          "from": {
+            "data": "series",
+            "transform": [
+              { "type": "collect", "sort": { "field": "year", "order": "ascending" } }
+            ]
+          },
+          "encode": {
+            "enter": {
+              "x": { "scale": "x", "field": "year" },
+              "y": { "scale": "y", "field": "domestic_share_top10_pct" },
+              "stroke": { "scale": "color", "field": "market_group" },
+              "strokeWidth": { "value": 3 },
+              "interpolate": { "value": "linear" }
+            },
+            "update": {
+              "opacity": [
+                {
+                  "test": "datum.market_group === 'Germany'",
+                  "value": 1.0
+                },
+                { "value": 0.45 }
+              ]
+            }
+          }
+        },
+        {
+          "name": "points",
+          "type": "symbol",
+          "from": {
+            "data": "series",
+            "transform": [
+              { "type": "collect", "sort": { "field": "year", "order": "ascending" } }
+            ]
+          },
+          "encode": {
+            "enter": {
+              "x": { "scale": "x", "field": "year" },
+              "y": { "scale": "y", "field": "domestic_share_top10_pct" },
+              "size": { "value": 55 },
+              "shape": { "value": "circle" },
+              "fill": { "scale": "color", "field": "market_group" },
+              "stroke": { "scale": "color", "field": "market_group" }
+            },
+            "update": {
+              "opacity": [
+                {
+                  "test": "datum.market_group === 'Germany'",
+                  "value": 1.0
+                },
+                { "value": 0.45 }
+              ],
+              "tooltip": {
+                "signal": "{'Market group': datum.market_group, 'Year': datum.year, 'Domestic share (%)': format(datum.domestic_share_top10_pct, '.1f'), 'Top-10 entries (valid)': datum.n_top10_valid, 'Domestic entries': datum.n_domestic}"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+
   "config": {
     "view": { "stroke": null },
     "axis": { "labelFontSize": 12, "titleFontSize": 13 },
