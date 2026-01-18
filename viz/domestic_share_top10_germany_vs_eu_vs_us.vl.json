@@ -29,7 +29,7 @@
       "type": "quantitative",
       "title": "Domestic share of Top-10 bestseller titles (%)",
       "scale": { "domain": [0, 100] },
-      "axis": { "grid": true, "tickCount": 6, "format": ".0f" }
+      "axis": { "grid": true, "tickCount": 11, "format": ".0f" }
     },
     "color": {
       "field": "market_group",
